@@ -148,7 +148,7 @@
 		todos,
 		goals,
 		loading,
-	}), Redux.applyMiddleware(checker, logger, message));
+	}), Redux.applyMiddleware(checker, logger));
 
 
 </script>
@@ -175,18 +175,20 @@
 	class Todos extends React.Component {
 		addItem = (e) => {
 			e.preventDefault()
-			const name = this.input.value
-			this.input.value = ''
 
-			this.props.store.dispatch(addTodoAction({
-				name,
-				complete: false,
-				id: generateId()
-			}))
+			return API.saveTodo(this.input.value)
+				.then((todo) => {
+					this.props.store.dispatch(addTodoAction(todo))
+					this.input.value = ''
+				})
+				.catch(() => {
+					alert("An error occured. Try again.")
+				})
 		}
 
 		removeItem = (todo) => {
 			this.props.store.dispatch(removeTodoAction(todo.id))
+
 			return API.deleteTodo(todo.id)
 				.catch(() => {
 					this.props.store.dispatch(addTodoAction(todo))
@@ -196,6 +198,7 @@
 
 		toggleItem = (id) => {
 			this.props.store.dispatch(toggleTodoAction(id))
+			
 			return API.saveTodoToggle(id)
 				.catch(() => {
 					this.props.store.dispatch(toggleTodoAction(id))
@@ -226,13 +229,22 @@
 	class Goals extends React.Component {
 		addGoal = (e) => {
 			e.preventDefault()
-			const name = this.input.value
-			this.input.value = ''
+			return API.saveGoal(this.input.value)
+				.then((goal) => {
+					this.props.store.dispatch(addGoalAction(goal))
+					this.input.value = ''
+				})
+				.catch(() => {
+					alert("An error occured. Try again.")
+				})
 
-			this.props.store.dispatch(addGoalAction({
-				name,
-				id: generateId()
-			}))
+			// const name = this.input.value
+			// this.input.value = ''
+
+			// this.props.store.dispatch(addGoalAction({
+			// 	name,
+			// 	id: generateId()
+			// }))
 		
 		}
 
